@@ -33,7 +33,9 @@ ${birthplace && `出生地点：${birthplace}`}
 请给出详细且专业的分析。`;
 
     const response = await fetch(
-      `${process.env.DEEPSEEK_BASE_URL}/chat/completions`,
+      `${
+        process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
+      }/chat/completions`,
       {
         method: 'POST',
         headers: {
@@ -41,7 +43,7 @@ ${birthplace && `出生地点：${birthplace}`}
           Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
         },
         body: JSON.stringify({
-          model: process.env.DEEPSEEK_MODEL,
+          model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
           messages: [
             {
               role: 'system',
