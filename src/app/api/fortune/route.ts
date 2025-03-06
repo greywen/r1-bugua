@@ -91,7 +91,7 @@ ${pillars?.hour && `时注：${pillars.hour}`}
       new ReadableStream({
         async start(controller) {
           const encoder = new TextEncoder();
-          const push = (data: any) => {
+          const push = (data: { t: string; r?: string }) => {
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
             );
@@ -108,7 +108,7 @@ ${pillars?.hour && `时注：${pillars.hour}`}
                 const chunk = decoder.decode(value, { stream: true });
                 buffer += chunk;
 
-                let lines = buffer.split('\n\n');
+                const lines = buffer.split('\n\n');
                 buffer = lines.pop() || '';
 
                 for (const line of lines) {

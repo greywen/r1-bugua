@@ -133,7 +133,7 @@ export default function Home() {
           const chunk = decoder.decode(value, { stream: true });
           buffer += chunk;
 
-          let lines = buffer.split('\n\n');
+          const lines = buffer.split('\n\n');
           buffer = lines.pop() || '';
           for (const line of lines) {
             if (line.startsWith('data: ')) {
