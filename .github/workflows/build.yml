@@ -1,0 +1,22 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+      - feature/cicd
+    paths:
+    - 'src/**'
+    - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login container
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ vars.DOCKER_USERNAME }} ${{ vars.DOCKER_REGISTRY }} --password-stdin
+      - name: Build container
+        run: docker build . -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua
+      - name: Push container
+        run: docker push ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua
