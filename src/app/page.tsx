@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
 import { FourPillars } from './types';
+import Markdown from 'react-markdown'
 registerLocale('zh-CN', zhCN);
 
 const getChineseHour = (date: Date): string => {
@@ -462,7 +463,7 @@ export default function Home() {
                     推理过程
                   </h3>
                   <div className='text-gray-400 text-sm whitespace-pre-wrap'>
-                    {reasoning}
+                    <Markdown key="reasoning">{reasoning}</Markdown>
                   </div>
                 </div>
               )}
@@ -472,7 +473,7 @@ export default function Home() {
                     运势解读
                   </h3>
                   <div className='text-gray-300 whitespace-pre-wrap'>
-                    {fortune}
+                    <Markdown key="fortune">{fortune}</Markdown>
                   </div>
                 </div>
               )}
