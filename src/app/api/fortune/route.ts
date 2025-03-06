@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { name, gender, birthplace, date, lunarDate, chineseHour } =
+    const { name, gender, birthplace, date, lunarDate, chineseHour, pillars } =
       await request.json();
 
     const prompt = `作为一个专业的算命师，请根据以下信息为这位求测者进行运势分析：
@@ -15,6 +15,10 @@ ${birthplace && `出生地点：${birthplace}`}
 阳历：${date}
 农历：${lunarDate}
 时辰：${chineseHour}
+${pillars?.year && `年注：${pillars.year}`}
+${pillars?.month && `月注：${pillars.month}`}
+${pillars?.day && `日注：${pillars.day}`}
+${pillars?.hour && `时注：${pillars.hour}`}
 
 请从以下几个方面进行分析：
 1. 整体运势
@@ -23,6 +27,12 @@ ${birthplace && `出生地点：${birthplace}`}
 4. 感情运势
 5. 健康提醒
 6. 开运建议
+7. 流年运势
+8. 五行分析
+9. 性格分析
+10. 吉凶方位
+11. 灾难规避
+等
 
 请用专业且富有诗意的语言描述，并给出具体的建议。在分析时请考虑：
 - 姓名对运势的影响
@@ -48,7 +58,7 @@ ${birthplace && `出生地点：${birthplace}`}
             {
               role: 'system',
               content:
-                '你是一位经验丰富的算命师，精通八字、紫微斗数等传统命理学说。',
+                '你是一位经验丰富的算命师，精通八字、紫微斗数、阴阳五行学说、天干地支、八卦、历法、命理学基础等传统命理学说。',
             },
             {
               role: 'user',
@@ -60,7 +70,7 @@ ${birthplace && `出生地点：${birthplace}`}
           top_p: 0.9,
           presence_penalty: 0.6,
           frequency_penalty: 0.5,
-          max_tokens: 2000,
+          max_tokens: 4096,
         }),
       }
     );

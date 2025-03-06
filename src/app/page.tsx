@@ -7,30 +7,11 @@ import { format } from 'date-fns';
 import { Lunar } from 'lunar-typescript';
 import { motion } from 'framer-motion';
 import 'react-datepicker/dist/react-datepicker.css';
-// import '../../styles/datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
-
-// 注册中文语言包
+import { FourPillars } from './types';
 registerLocale('zh-CN', zhCN);
 
-// 时辰映射
-const CHINESE_HOURS = {
-  子时: '23:00',
-  丑时: '01:00',
-  寅时: '03:00',
-  卯时: '05:00',
-  辰时: '07:00',
-  巳时: '09:00',
-  午时: '11:00',
-  未时: '13:00',
-  申时: '15:00',
-  酉时: '17:00',
-  戌时: '19:00',
-  亥时: '21:00',
-};
-
-// 获取时辰名称
 const getChineseHour = (date: Date): string => {
   const hour = date.getHours();
   const hourMap: { [key: number]: string } = {
@@ -62,6 +43,23 @@ const getChineseHour = (date: Date): string => {
   return hourMap[hour] || '';
 };
 
+function calculateFourPillars(dateTime: string | Date): FourPillars {
+  const date = new Date(dateTime);
+  const lunar = Lunar.fromDate(date);
+
+  const year = lunar.getYearInGanZhi();
+  const month = lunar.getMonthInGanZhi();
+  const day = lunar.getDayInGanZhi();
+  const hour = lunar.getTimeInGanZhi();
+
+  return {
+    year,
+    month,
+    day,
+    hour,
+  };
+}
+
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [lunarDate, setLunarDate] = useState<string>('');
@@ -72,9 +70,17 @@ export default function Home() {
   const [fortune, setFortune] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [reasoning, setReasoning] = useState<string>('');
+  const [pillar, setPillar] = useState<FourPillars>({
+    year: '',
+    month: '',
+    day: '',
+    hour: '',
+  });
 
   const handleDateChange = (date: Date | null) => {
+    if (!date) return;
     setSelectedDate(date);
+    setPillar(calculateFourPillars(date));
     const lunar = Lunar.fromDate(date!);
     setLunarDate(
       `${lunar.getYearInChinese()}年 ${lunar.getMonthInChinese()}月 ${lunar.getDayInChinese()}`
@@ -342,7 +348,7 @@ export default function Home() {
                   />
                 </div>
                 {lunarDate && selectedDate && (
-                  <p className='text-sm text-gray-300 pt-2'>
+                  <p className='text-sm text-gray-300 py-2'>
                     {lunarDate} {getChineseHour(selectedDate)}
                   </p>
                 )}
@@ -360,6 +366,62 @@ export default function Home() {
                 />
               </div>
             </div>
+            {selectedDate && (
+              <div className='flex gap-2 my-2'>
+                <div className='flex'>
+                  <label className='block text-sm font-medium text-gray-300 mb-2'>
+                    年柱
+                  </label>
+                  <input
+                    type='text'
+                    value={pillar.year}
+                    onChange={(e) =>
+                      setPillar({ ...pillar, year: e.target.value })
+                    }
+                    className='glass-input'
+                  />
+                </div>
+                <div className='flex items-center'>
+                  <label className='block text-sm font-medium text-gray-300 mb-2'>
+                    月柱
+                  </label>
+                  <input
+                    type='text'
+                    value={pillar.month}
+                    onChange={(e) =>
+                      setPillar({ ...pillar, month: e.target.value })
+                    }
+                    className='glass-input'
+                  />
+                </div>
+                <div className='flex'>
+                  <label className='block text-sm font-medium text-gray-300 mb-2'>
+                    日柱
+                  </label>
+                  <input
+                    type='text'
+                    value={pillar.day}
+                    onChange={(e) =>
+                      setPillar({ ...pillar, day: e.target.value })
+                    }
+                    className='glass-input'
+                  />
+                </div>
+                <div className='flex'>
+                  <label className='block text-sm font-medium text-gray-300 mb-2'>
+                    时柱
+                  </label>
+                  <input
+                    type='text'
+                    value={pillar.hour}
+                    onChange={(e) =>
+                      setPillar({ ...pillar, hour: e.target.value })
+                    }
+                    className='glass-input'
+                  />
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
