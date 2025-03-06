@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   const handleFortuneTelling = async () => {
-    if (!selectedDate || !name || !birthplace) {
+    if (!selectedDate || !name) {
       setError('请填写所有必要信息');
       return;
     }
@@ -231,8 +231,12 @@ export default function Home() {
                   onChange={(e) => setGender(e.target.value as '男' | '女')}
                   className='glass-input'
                 >
-                  <option value='男'>男</option>
-                  <option value='女'>女</option>
+                  <option className='bg-gray-600' value='男'>
+                    男
+                  </option>
+                  <option className='bg-gray-600' value='女'>
+                    女
+                  </option>
                 </select>
               </div>
 
@@ -240,23 +244,103 @@ export default function Home() {
                 <label className='block text-sm font-medium text-gray-300 mb-2'>
                   出生日期<span className='text-red-400'>*</span>
                 </label>
-                <DatePicker
-                  placeholderText='请选择您的出生日期'
-                  className='w-full min-w-full'
-                  selected={selectedDate}
-                  onChange={handleDateChange}
-                  showTimeSelect
-                  timeIntervals={60}
-                  timeFormat='HH:mm'
-                  dateFormat='yyyy年MM月dd日 HH:mm'
-                  locale='zh-CN'
-                  customInput={
-                    <input
-                      className='glass-input'
-                      placeholder='请选择出生日期和时间'
-                    />
-                  }
-                />
+                <div className='relative'>
+                  <DatePicker
+                    placeholderText='请选择您的出生日期'
+                    className='w-full min-w-full glass-input'
+                    selected={selectedDate}
+                    onChange={handleDateChange}
+                    showTimeSelect
+                    timeIntervals={60}
+                    timeFormat='HH:mm'
+                    dateFormat='yyyy年MM月dd日 HH:mm'
+                    locale='zh-CN'
+                    customInput={<input readOnly />}
+                    renderCustomHeader={({
+                      date,
+                      changeYear,
+                      changeMonth,
+                      decreaseMonth,
+                      increaseMonth,
+                      prevMonthButtonDisabled,
+                      nextMonthButtonDisabled,
+                    }) => (
+                      <div className='flex items-center justify-between px-2 py-2  rounded-t-lg'>
+                        <button
+                          onClick={decreaseMonth}
+                          disabled={prevMonthButtonDisabled}
+                          className='p-1  rounded-full disabled:opacity-50'
+                        >
+                          <svg
+                            className='w-5 h-5 text-gray-300'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M15 19l-7-7 7-7'
+                            />
+                          </svg>
+                        </button>
+                        <div className='flex items-center space-x-2'>
+                          <select
+                            value={date.getFullYear()}
+                            onChange={({ target: { value } }) =>
+                              changeYear(Number(value))
+                            }
+                            className=' scrollbar-none text-gray-700 rounded px-2 py-1 text-sm focus: outline-none'
+                          >
+                            {Array.from(
+                              { length: 120 },
+                              (_, i) => new Date().getFullYear() - i
+                            ).map((year) => (
+                              <option key={year} value={year}>
+                                {year}年
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            value={date.getMonth()}
+                            onChange={({ target: { value } }) =>
+                              changeMonth(Number(value))
+                            }
+                            className=' text-gray-700 rounded px-2 py-1 text-sm focus: outline-none'
+                          >
+                            {Array.from({ length: 12 }, (_, i) => i).map(
+                              (month) => (
+                                <option key={month} value={month}>
+                                  {month + 1}月
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </div>
+                        <button
+                          onClick={increaseMonth}
+                          disabled={nextMonthButtonDisabled}
+                          className='p-1  rounded-full disabled:opacity-50'
+                        >
+                          <svg
+                            className='w-5 h-5 text-gray-700'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M9 5l7 7-7 7'
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  />
+                </div>
                 {lunarDate && selectedDate && (
                   <p className='text-sm text-gray-300 pt-2'>
                     {lunarDate} {getChineseHour(selectedDate)}

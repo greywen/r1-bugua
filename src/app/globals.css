@@ -84,3 +84,19 @@
 .react-datepicker-wrapper {
   min-width: 100%;
 }
+
+.react-datepicker__header--time {
+  display: none !important;
+}
+
+.react-datepicker__time-list::-webkit-scrollbar {
+  display: none;
+}
+
+.react-datepicker__header--custom>div>button {
+  display: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

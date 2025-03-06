@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request, res: Response) {
+export async function POST(request: Request) {
   try {
     const { name, gender, birthplace, date, lunarDate, chineseHour } =
       await request.json();
@@ -9,7 +9,7 @@ export async function POST(request: Request, res: Response) {
 个人信息：
 姓名：${name}
 性别：${gender}
-出生地点：${birthplace}
+${birthplace && `出生地点：${birthplace}`}
 
 时间信息：
 阳历：${date}
