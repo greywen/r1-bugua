@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { name, gender, birthplace, date, lunarDate, chineseHour, pillars } =
+    const { name, gender, birthplace, date, lunarDate, chineseHour, pillars, age } =
       await request.json();
 
     const prompt = `作为一个专业的算命师，请根据以下信息为这位求测者进行运势分析：
@@ -15,6 +15,7 @@ ${birthplace && `出生地点：${birthplace}`}
 阳历：${date}
 农历：${lunarDate}
 时辰：${chineseHour}
+年龄：${age}
 ${pillars?.year && `年注：${pillars.year}`}
 ${pillars?.month && `月注：${pillars.month}`}
 ${pillars?.day && `日注：${pillars.day}`}
@@ -36,6 +37,7 @@ ${pillars?.hour && `时注：${pillars.hour}`}
 
 请用专业且富有诗意的语言描述，并给出具体的建议。在分析时请考虑：
 - 姓名对运势的影响
+- 当前年龄段需要关注的点
 - 性别特点
 - 出生地点的地理特征
 - 农历日期和时辰的五行属性
@@ -43,8 +45,7 @@ ${pillars?.hour && `时注：${pillars.hour}`}
 请给出详细且专业的分析。`;
 
     const response = await fetch(
-      `${
-        process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
+      `${process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
       }/chat/completions`,
       {
         method: 'POST',

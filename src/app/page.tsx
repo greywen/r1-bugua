@@ -61,12 +61,31 @@ function calculateFourPillars(dateTime: string | Date): FourPillars {
   };
 }
 
+function calculateAge(birthdayString: string | Date): string {
+  const birthday = new Date(birthdayString);
+  const today = new Date();
+
+  let years = today.getFullYear() - birthday.getFullYear();
+  let months = today.getMonth() - birthday.getMonth();
+
+  if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
+    years--;
+    months += 12;
+  }
+  if (today.getDate() < birthday.getDate()) {
+    months--;
+  }
+
+  return `${years}岁${months}个月`;
+}
+
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [lunarDate, setLunarDate] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<'男' | '女'>('男');
   const [birthplace, setBirthplace] = useState<string>('');
+  const [age, setAge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [fortune, setFortune] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -82,6 +101,7 @@ export default function Home() {
     if (!date) return;
     setSelectedDate(date);
     setPillar(calculateFourPillars(date));
+    setAge(calculateAge(date));
     const lunar = Lunar.fromDate(date!);
     setLunarDate(
       `${lunar.getYearInChinese()}年 ${lunar.getMonthInChinese()}月 ${lunar.getDayInChinese()}`
@@ -112,6 +132,7 @@ export default function Home() {
           date: format(selectedDate, 'yyyy-MM-dd HH:mm'),
           lunarDate,
           chineseHour: getChineseHour(selectedDate),
+          age,
         }),
       });
 
@@ -350,7 +371,7 @@ export default function Home() {
                 </div>
                 {lunarDate && selectedDate && (
                   <p className='text-sm text-gray-300 py-2'>
-                    {lunarDate} {getChineseHour(selectedDate)}
+                    {lunarDate} {getChineseHour(selectedDate)} {age}
                   </p>
                 )}
               </div>
