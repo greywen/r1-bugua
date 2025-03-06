@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
@@ -164,12 +165,19 @@ export default function Home() {
           <div className='flex items-center justify-between h-16'>
             <div className='flex items-center'>
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
                 className='flex items-center space-x-2'
               >
-                <span className='text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent'>
-                  R1-卜卦
+                <span className='flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent'>
+                  <Image
+                    src='/logo.svg'
+                    alt='Bu logo'
+                    width={40}
+                    height={38}
+                    priority
+                  />
                 </span>
               </motion.div>
             </div>
