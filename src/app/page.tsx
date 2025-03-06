@@ -1,101 +1,331 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import { format } from 'date-fns';
+import { Lunar } from 'lunar-typescript';
+import { motion } from 'framer-motion';
+import 'react-datepicker/dist/react-datepicker.css';
+// import '../../styles/datepicker.css';
+import { registerLocale } from 'react-datepicker';
+import zhCN from 'date-fns/locale/zh-CN';
+
+// 注册中文语言包
+registerLocale('zh-CN', zhCN);
+
+// 时辰映射
+const CHINESE_HOURS = {
+  子时: '23:00',
+  丑时: '01:00',
+  寅时: '03:00',
+  卯时: '05:00',
+  辰时: '07:00',
+  巳时: '09:00',
+  午时: '11:00',
+  未时: '13:00',
+  申时: '15:00',
+  酉时: '17:00',
+  戌时: '19:00',
+  亥时: '21:00',
+};
+
+// 获取时辰名称
+const getChineseHour = (date: Date): string => {
+  const hour = date.getHours();
+  const hourMap: { [key: number]: string } = {
+    23: '子时',
+    0: '子时',
+    1: '丑时',
+    2: '丑时',
+    3: '寅时',
+    4: '寅时',
+    5: '卯时',
+    6: '卯时',
+    7: '辰时',
+    8: '辰时',
+    9: '巳时',
+    10: '巳时',
+    11: '午时',
+    12: '午时',
+    13: '未时',
+    14: '未时',
+    15: '申时',
+    16: '申时',
+    17: '酉时',
+    18: '酉时',
+    19: '戌时',
+    20: '戌时',
+    21: '亥时',
+    22: '亥时',
+  };
+  return hourMap[hour] || '';
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [lunarDate, setLunarDate] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [gender, setGender] = useState<'男' | '女'>('男');
+  const [birthplace, setBirthplace] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [fortune, setFortune] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [reasoning, setReasoning] = useState<string>('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    const lunar = Lunar.fromDate(date!);
+    setLunarDate(
+      `${lunar.getYearInChinese()}年 ${lunar.getMonthInChinese()}月 ${lunar.getDayInChinese()}`
+    );
+  };
+
+  const handleFortuneTelling = async () => {
+    if (!selectedDate || !name || !birthplace) {
+      setError('请填写所有必要信息');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setFortune('');
+    setReasoning('');
+
+    try {
+      const response = await fetch('/api/fortune', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          gender,
+          birthplace,
+          date: format(selectedDate, 'yyyy-MM-dd HH:mm'),
+          lunarDate,
+          chineseHour: getChineseHour(selectedDate),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('获取运势失败');
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('无法读取响应');
+
+      let result = '';
+      let currentReasoning = '';
+      let buffer = '';
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          let lines = buffer.split('\n\n');
+          buffer = lines.pop() || '';
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const l = line.slice(6);
+              if (l === '[DONE]') {
+                reader?.cancel();
+                break;
+              }
+              const parsed = JSON.parse(l);
+              if (parsed.t === 'content') {
+                result += parsed.r;
+                setFortune(result);
+              } else if (parsed.t === 'reasoning') {
+                currentReasoning += parsed.r;
+                setReasoning(currentReasoning);
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError(
+        '少年郎，你我之缘，尚未落定。待时机成熟，贫道自会为你演上一卦，窥探天机。'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'>
+      <nav className='glass-nav'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex items-center justify-between h-16'>
+            <div className='flex items-center'>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className='flex items-center space-x-2'
+              >
+                <span className='text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent'>
+                  R1-卜卦
+                </span>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className='pt-20 pb-8 px-4 sm:px-6 lg:px-8'>
+        <div className='max-w-3xl mx-auto space-y-8'>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='text-center space-y-4'
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <h1 className='text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent'>
+              探索命运的奥秘
+            </h1>
+            <p className='text-gray-400 text-lg'>
+              填写您的个人信息，让AI为您解读命运的密码
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className='glass-card p-6'
           >
-            Read our docs
-          </a>
+            <h2 className='text-xl font-semibold text-gray-200 mb-6'>
+              个人信息
+            </h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div>
+                <label className='block text-sm font-medium text-gray-300 mb-2'>
+                  姓名<span className='text-red-400'>*</span>
+                </label>
+                <input
+                  type='text'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className='glass-input'
+                  placeholder='请输入您的姓名'
+                />
+              </div>
+              <div>
+                <label className='block text-sm font-medium text-gray-300 mb-2'>
+                  性别<span className='text-red-400'>*</span>
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value as '男' | '女')}
+                  className='glass-input'
+                >
+                  <option value='男'>男</option>
+                  <option value='女'>女</option>
+                </select>
+              </div>
+
+              <div>
+                <label className='block text-sm font-medium text-gray-300 mb-2'>
+                  出生日期<span className='text-red-400'>*</span>
+                </label>
+                <DatePicker
+                  placeholderText='请选择您的出生日期'
+                  className='w-full min-w-full'
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  showTimeSelect
+                  timeIntervals={60}
+                  timeFormat='HH:mm'
+                  dateFormat='yyyy年MM月dd日 HH:mm'
+                  locale='zh-CN'
+                  customInput={
+                    <input
+                      className='glass-input'
+                      placeholder='请选择出生日期和时间'
+                    />
+                  }
+                />
+                {lunarDate && selectedDate && (
+                  <p className='text-sm text-gray-300 pt-2'>
+                    {lunarDate} {getChineseHour(selectedDate)}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className='block text-sm font-medium text-gray-300 mb-2'>
+                  出生地
+                </label>
+                <input
+                  type='text'
+                  value={birthplace}
+                  onChange={(e) => setBirthplace(e.target.value)}
+                  className='glass-input'
+                  placeholder='请输入您的出生地'
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className='flex justify-center'
+          >
+            <button
+              onClick={handleFortuneTelling}
+              disabled={isLoading}
+              className='glass-button text-lg px-8 py-4'
+            >
+              {isLoading ? '正在解读...' : '开始解读'}
+            </button>
+          </motion.div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className='text-red-400 text-center'
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {(fortune || reasoning) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className='glass-card p-6 space-y-6'
+            >
+              {reasoning && (
+                <div>
+                  <h3 className='text-lg font-semibold text-gray-200 mb-3'>
+                    推理过程
+                  </h3>
+                  <div className='text-gray-300 whitespace-pre-wrap'>
+                    {reasoning}
+                  </div>
+                </div>
+              )}
+              {fortune && (
+                <div>
+                  <h3 className='text-lg font-semibold text-gray-200 mb-3'>
+                    运势解读
+                  </h3>
+                  <div className='text-gray-300 whitespace-pre-wrap'>
+                    {fortune}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

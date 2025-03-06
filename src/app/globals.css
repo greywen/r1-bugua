@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --foreground-rgb      : 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb  : 11, 15, 25;
+  --accent-color        : 99, 102, 241;
+  --glass-bg            : rgba(255, 255, 255, 0.05);
+  --glass-border        : rgba(255, 255, 255, 0.1);
+  --glass-shadow        : 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply text-gray-100;
+    background: linear-gradient(135deg,
+        rgb(var(--background-start-rgb)),
+        rgb(var(--background-end-rgb)));
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-button {
+    @apply px-6 py-3 rounded-xl font-medium transition-all duration-300;
+    background     : linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(99, 102, 241, 0.6));
+    backdrop-filter: blur(4px);
+    border         : 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow     : 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-button:hover {
+    @apply transform scale-105;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(99, 102, 241, 0.7));
+  }
+
+  .glass-input {
+    @apply w-full px-4 py-3 rounded-xl transition-all duration-300;
+    background     : rgba(255, 255, 255, 0.05);
+    border         : 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+  }
+
+  .glass-input:focus {
+    @apply outline-none;
+    background  : rgba(255, 255, 255, 0.08);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow  : 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  .glass-nav {
+    @apply fixed top-0 left-0 right-0 z-50;
+    background     : rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom  : 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width : 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background   : rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.react-datepicker-wrapper {
+  min-width: 100%;
 }
