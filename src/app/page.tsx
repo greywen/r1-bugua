@@ -183,7 +183,7 @@ export default function Home() {
                     width={40}
                     height={38}
                     priority
-                  />
+                  />R1卜卦
                 </span>
               </motion.div>
             </div>
@@ -478,6 +478,24 @@ export default function Home() {
               )}
             </motion.div>
           )}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            <h1 className='font-extrabold text-2xl text-gray-400'>免责声明</h1>
+            <br />
+            <div className='text-gray-400 tracking-wider'>
+              本网站提供的所有内容仅供娱乐和参考用途，不具有任何科学依据或专业建议性质。本站所涉及的算命、占卜等相关服务仅为用户提供休闲娱乐体验，不能作为决策依据或替代专业建议。
+              <br />
+              <b>请注意：</b>
+              本网站不保证内容的准确性或可靠性，相关结果仅供参考。
+              用户需自行判断和承担使用本网站服务所产生的任何后果。
+              本网站不支持、不鼓励任何形式的迷信活动，请理性看待相关内容。
+              如您对任何个人或专业问题有疑问，请寻求专业人士或机构的建议。
+            </div>
+          </motion.div>
         </div>
       </main>
     </div>
