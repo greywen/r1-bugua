@@ -461,7 +461,7 @@ export default function Home() {
                   <h3 className='text-lg font-semibold text-gray-200 mb-3'>
                     推理过程
                   </h3>
-                  <div className='text-gray-300 whitespace-pre-wrap'>
+                  <div className='text-gray-400 text-sm whitespace-pre-wrap'>
                     {reasoning}
                   </div>
                 </div>
