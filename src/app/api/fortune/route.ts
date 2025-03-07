@@ -1,9 +1,20 @@
+import { calculateAge } from '@/utils';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { name, gender, birthplace, date, lunarDate, chineseHour, pillars, age } =
+    const { name, gender, birthplace, date, lunarDate, chineseHour, pillars } =
       await request.json();
+
+    if (name.length > 4) {
+      throw new Error('Name is to long');
+    }
+
+    if (birthplace.length > 20) {
+      throw new Error('Birthplace is to long');
+    }
+
+    const age = calculateAge(date);
 
     const prompt = `作为一个专业的算命师，请根据以下信息为这位求测者进行运势分析：
 个人信息：
@@ -45,7 +56,8 @@ ${pillars?.hour && `时注：${pillars.hour}`}
 请给出详细且专业的分析。`;
 
     const response = await fetch(
-      `${process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
+      `${
+        process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
       }/chat/completions`,
       {
         method: 'POST',

@@ -10,7 +10,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
 import { FourPillars } from './types';
-import Markdown from 'react-markdown'
+import Markdown from 'react-markdown';
+import { calculateAge } from '@/utils';
 registerLocale('zh-CN', zhCN);
 
 const getChineseHour = (date: Date): string => {
@@ -59,24 +60,6 @@ function calculateFourPillars(dateTime: string | Date): FourPillars {
     day,
     hour,
   };
-}
-
-function calculateAge(birthdayString: string | Date): string {
-  const birthday = new Date(birthdayString);
-  const today = new Date();
-
-  let years = today.getFullYear() - birthday.getFullYear();
-  let months = today.getMonth() - birthday.getMonth();
-
-  if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
-    years--;
-    months += 12;
-  }
-  if (today.getDate() < birthday.getDate()) {
-    months--;
-  }
-
-  return `${years}岁${months}个月`;
 }
 
 export default function Home() {
@@ -129,10 +112,9 @@ export default function Home() {
           name,
           gender,
           birthplace,
-          date: format(selectedDate, 'yyyy-MM-dd HH:mm'),
+          date: format(selectedDate, 'yyyy-MM-dd HH'),
           lunarDate,
           chineseHour: getChineseHour(selectedDate),
-          age,
         }),
       });
 
@@ -201,12 +183,30 @@ export default function Home() {
                 <span className='flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent'>
                   <Image
                     src='/logo.svg'
-                    alt='Bu logo'
+                    alt='R1-BuGua logo'
                     width={40}
                     height={38}
                     priority
-                  />R1卜卦
+                  />
+                  R1卜卦
                 </span>
+              </motion.div>
+            </div>
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className='flex items-center space-x-2'
+              >
+                <a href='https://github.com/greywen/r1-bugua'>
+                  <Image
+                    src='/github.svg'
+                    alt='Github logo'
+                    width={28}
+                    height={28}
+                  />
+                </a>
               </motion.div>
             </div>
           </div>
@@ -243,6 +243,7 @@ export default function Home() {
                   姓名<span className='text-red-400'>*</span>
                 </label>
                 <input
+                  maxLength={4}
                   type='text'
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -316,9 +317,13 @@ export default function Home() {
                         <div className='flex items-center space-x-2'>
                           <select
                             value={date.getFullYear()}
-                            onChange={({ target: { value } }) =>
-                              changeYear(Number(value))
-                            }
+                            onChange={({ target: { value } }) => {
+                              const newDate = new Date(
+                                date.setFullYear(Number(value))
+                              );
+                              changeYear(Number(value));
+                              handleDateChange(newDate);
+                            }}
                             className=' scrollbar-none text-gray-700 rounded px-2 py-1 text-sm focus: outline-none'
                           >
                             {Array.from(
@@ -332,9 +337,13 @@ export default function Home() {
                           </select>
                           <select
                             value={date.getMonth()}
-                            onChange={({ target: { value } }) =>
-                              changeMonth(Number(value))
-                            }
+                            onChange={({ target: { value } }) => {
+                              const newDate = new Date(
+                                date.setMonth(Number(value))
+                              );
+                              changeMonth(Number(value));
+                              handleDateChange(newDate);
+                            }}
                             className=' text-gray-700 rounded px-2 py-1 text-sm focus: outline-none'
                           >
                             {Array.from({ length: 12 }, (_, i) => i).map(
@@ -381,6 +390,7 @@ export default function Home() {
                 </label>
                 <input
                   type='text'
+                  maxLength={20}
                   value={birthplace}
                   onChange={(e) => setBirthplace(e.target.value)}
                   className='glass-input'
@@ -484,7 +494,7 @@ export default function Home() {
                     推理过程
                   </h3>
                   <div className='text-gray-400 text-sm whitespace-pre-wrap'>
-                    <Markdown key="reasoning">{reasoning}</Markdown>
+                    <Markdown key='reasoning'>{reasoning}</Markdown>
                   </div>
                 </div>
               )}
@@ -494,7 +504,7 @@ export default function Home() {
                     运势解读
                   </h3>
                   <div className='text-gray-300 whitespace-pre-wrap'>
-                    <Markdown key="fortune">{fortune}</Markdown>
+                    <Markdown key='fortune'>{fortune}</Markdown>
                   </div>
                 </div>
               )}
@@ -506,15 +516,29 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <h1 className='font-extrabold text-2xl text-gray-400'>免责声明</h1>
-            <br />
             <div className='text-gray-400 tracking-wider'>
+              <p className='text-2xl font-bold py-2'>免责声明</p>
               本网站提供的所有内容仅供娱乐和参考用途，不具有任何科学依据或专业建议性质。本站所涉及的算命、占卜等相关服务仅为用户提供休闲娱乐体验，不能作为决策依据或替代专业建议。
-              <br />
-              <b>请注意：</b>
-              本网站不保证内容的准确性或可靠性，相关结果仅供参考。
-              用户需自行判断和承担使用本网站服务所产生的任何后果。
-              本网站不支持、不鼓励任何形式的迷信活动，请理性看待相关内容。
+              <p className='font-bold py-1'>请注意：</p>
+              <p>1. 本网站不保证内容的准确性或可靠性，相关结果仅供参考。</p>
+              <p>2. 用户需自行判断和承担使用本网站服务所产生的任何后果。</p>
+              <p>
+                3. 本网站不支持、不鼓励任何形式的迷信活动，请理性看待相关内容。
+              </p>
+              <p className='text-lg font-bold py-2'>隐私保护声明</p>
+              本网站严格遵守用户隐私保护原则：
+              <p>
+                1.
+                本网站完全开源免费、不会收集、存储或分享任何用户的个人信息或数据。
+              </p>
+              <p>
+                2.
+                用户在使用服务过程中所输入的信息均不被保存，所有操作均完全匿名。
+              </p>
+              <p>
+                3.
+                本网站的服务基于即时生成，用户数据不会被记录或用于任何其他用途。
+              </p>
               如您对任何个人或专业问题有疑问，请寻求专业人士或机构的建议。
             </div>
           </motion.div>
