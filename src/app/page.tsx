@@ -168,6 +168,13 @@ export default function Home() {
     }
   };
 
+  const handleCopy = (value: string) => {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(value).then(() => {
+      alert('复制成功');
+    });
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'>
       <nav className='glass-nav'>
@@ -495,8 +502,19 @@ export default function Home() {
             >
               {reasoning && (
                 <div>
-                  <h3 className='text-lg font-semibold text-gray-200 mb-3'>
+                  <h3 className='text-lg font-semibold text-gray-200 mb-3 flex gap-2'>
                     推理过程
+                    <Image
+                      onClick={() => {
+                        handleCopy(reasoning);
+                      }}
+                      title='复制'
+                      src='/copy.svg'
+                      alt='Copy'
+                      width={16}
+                      height={16}
+                      priority
+                    />
                   </h3>
                   <div className='text-gray-400 text-sm whitespace-pre-wrap'>
                     <Markdown key='reasoning'>{reasoning}</Markdown>
@@ -505,8 +523,19 @@ export default function Home() {
               )}
               {fortune && (
                 <div>
-                  <h3 className='text-lg font-semibold text-gray-200 mb-3'>
+                  <h3 className='text-lg font-semibold text-gray-200 mb-3 flex gap-2'>
                     运势解读
+                    <Image
+                      onClick={() => {
+                        handleCopy(reasoning);
+                      }}
+                      title='复制'
+                      src='/copy.svg'
+                      alt='Copy'
+                      width={16}
+                      height={16}
+                      priority
+                    />
                   </h3>
                   <div className='text-gray-300 whitespace-pre-wrap'>
                     <Markdown key='fortune'>{fortune}</Markdown>
