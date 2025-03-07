@@ -527,7 +527,7 @@ export default function Home() {
                     运势解读
                     <Image
                       onClick={() => {
-                        handleCopy(reasoning);
+                        handleCopy(fortune);
                       }}
                       title='复制'
                       src='/copy.svg'
