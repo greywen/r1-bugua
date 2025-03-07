@@ -18,9 +18,9 @@ jobs:
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ vars.DOCKER_USERNAME }} ${{ vars.DOCKER_REGISTRY }} --password-stdin
       - name: Build container
         run: |
-            docker build . -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:${{ github.run_number }}
+            docker build . -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:r-${{ github.run_number }}
       - name: Push container
         run: | 
-            docker push ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:${{ github.run_number }}
-            docker tag  ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:${{ github.run_number }} ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:latest
+            docker push ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:r-${{ github.run_number }}
+            docker tag  ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:r-${{ github.run_number }} ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:latest
             docker push ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_NAMESPACE }}/r1-bugua:latest
