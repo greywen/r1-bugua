@@ -30,7 +30,6 @@
   .glass-button {
     @apply px-6 py-3 rounded-xl font-medium transition-all duration-300;
     background     : linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(99, 102, 241, 0.6));
-    backdrop-filter: blur(4px);
     border         : 1px solid rgba(255, 255, 255, 0.1);
     box-shadow     : 0 4px 12px rgba(0, 0, 0, 0.1);
   }

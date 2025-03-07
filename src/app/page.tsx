@@ -275,8 +275,9 @@ export default function Home() {
                 </label>
                 <div className='relative'>
                   <DatePicker
+                    maxDate={new Date()}
                     placeholderText='请选择您的出生日期'
-                    className='w-full min-w-full glass-input'
+                    className='w-full min-w-full glass-input z-50'
                     selected={selectedDate}
                     onChange={handleDateChange}
                     showTimeSelect
@@ -399,13 +400,14 @@ export default function Home() {
               </div>
             </div>
             {selectedDate && (
-              <div className='flex gap-2 my-2'>
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-2 my-2'>
                 <div className='flex'>
                   <label className='block text-sm font-medium text-gray-300 mb-2'>
                     年柱
                   </label>
                   <input
                     type='text'
+                    readOnly
                     value={pillar.year}
                     onChange={(e) =>
                       setPillar({ ...pillar, year: e.target.value })
@@ -419,6 +421,7 @@ export default function Home() {
                   </label>
                   <input
                     type='text'
+                    readOnly
                     value={pillar.month}
                     onChange={(e) =>
                       setPillar({ ...pillar, month: e.target.value })
@@ -432,6 +435,7 @@ export default function Home() {
                   </label>
                   <input
                     type='text'
+                    readOnly
                     value={pillar.day}
                     onChange={(e) =>
                       setPillar({ ...pillar, day: e.target.value })
@@ -445,6 +449,7 @@ export default function Home() {
                   </label>
                   <input
                     type='text'
+                    readOnly
                     value={pillar.hour}
                     onChange={(e) =>
                       setPillar({ ...pillar, hour: e.target.value })
