@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Star from '@/components/star';
 
 export const metadata: Metadata = {
   title: 'R1 卜卦 - 探索命运的奥秘',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='zh'>
-      <body className='antialiased'>{children}</body>
+      <body className='antialiased scrollbar-none'>
+        <Star />
+        {children}
+      </body>
     </html>
   );
 }

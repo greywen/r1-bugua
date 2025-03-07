@@ -29,9 +29,9 @@
 
   .glass-button {
     @apply px-6 py-3 rounded-xl font-medium transition-all duration-300;
-    background     : linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(99, 102, 241, 0.6));
-    border         : 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow     : 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(99, 102, 241, 0.6));
+    border    : 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   .glass-button:hover {
@@ -108,5 +108,122 @@
 
   .react-datepicker__time-container>.react-datepicker__time>.react-datepicker__time-box {
     width: 50px !important;
+  }
+}
+
+.galaxy {
+  position : absolute;
+  top      : 50%;
+  left     : 50%;
+  width    : 800px;
+  height   : 800px;
+  transform: translate(-50%, -50%);
+  animation: rotate 60s linear infinite;
+}
+
+.star {
+  position        : absolute;
+  top             : 50%;
+  left            : 50%;
+  width           : 2px;
+  height          : 2px;
+  background-color: white;
+  border-radius   : 50%;
+  box-shadow      : 0 0 5px white;
+}
+
+/* 生成随机星星 */
+.star:nth-child(1) {
+  top      : 20%;
+  left     : 30%;
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+.star:nth-child(2) {
+  top      : 60%;
+  left     : 80%;
+  animation: twinkle 3s infinite ease-in-out;
+}
+
+.star:nth-child(3) {
+  top      : 40%;
+  left     : 10%;
+  animation: twinkle 1.5s infinite ease-in-out;
+}
+
+.star:nth-child(4) {
+  top      : 75%;
+  left     : 65%;
+  animation: twinkle 2.5s infinite ease-in-out;
+}
+
+.star:nth-child(5) {
+  top      : 10%;
+  left     : 55%;
+  animation: twinkle 3.5s infinite ease-in-out;
+}
+
+.star:nth-child(6) {
+  top      : 33%;
+  left     : 22%;
+  animation: twinkle 1.8s infinite ease-in-out;
+}
+
+.star:nth-child(7) {
+  top      : 88%;
+  left     : 77%;
+  animation: twinkle 2.2s infinite ease-in-out;
+}
+
+.star:nth-child(8) {
+  top      : 55%;
+  left     : 40%;
+  animation: twinkle 2.9s infinite ease-in-out;
+}
+
+.star:nth-child(9) {
+  top      : 95%;
+  left     : 15%;
+  animation: twinkle 1.2s infinite ease-in-out;
+}
+
+.star:nth-child(10) {
+  top      : 28%;
+  left     : 90%;
+  animation: twinkle 3.1s infinite ease-in-out;
+}
+
+
+.nebula {
+  position     : absolute;
+  top          : 50%;
+  left         : 50%;
+  width        : 300px;
+  height       : 300px;
+  border-radius: 50%;
+  background   : radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+  filter       : blur(50px);
+  opacity      : 0;
+}
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
   }
 }
