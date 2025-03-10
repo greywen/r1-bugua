@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 ${birthplace && `出生地点：${birthplace}`}
 
 时间信息：
-今天阳历： ${new Date().toLocaleDateString()}
+今天是阳历： ${new Date().toLocaleDateString()}
 阳历：${date}
 农历：${lunarDate}
 时辰：${chineseHour}
