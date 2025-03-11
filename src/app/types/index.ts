@@ -17,7 +17,7 @@ export const tabTypes = [
   '运势与方位',
 ];
 
-export const types = [
+export const interpretationTypes = [
   [
     '学业发展',
     '天赋潜能',

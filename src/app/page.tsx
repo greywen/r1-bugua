@@ -9,59 +9,11 @@ import { motion } from 'framer-motion';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
-import { FourPillars, tabTypes, types } from './types';
+import { FourPillars, tabTypes, interpretationTypes } from './types';
 import Markdown from 'react-markdown';
-import { calculateAge } from '@/utils';
+import { calculateAge, calculateFourPillars, getChineseHour } from '@/utils';
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 registerLocale('zh-CN', zhCN);
-
-const getChineseHour = (date: Date): string => {
-  const hour = date.getHours();
-  const hourMap: { [key: number]: string } = {
-    23: '子时',
-    0: '子时',
-    1: '丑时',
-    2: '丑时',
-    3: '寅时',
-    4: '寅时',
-    5: '卯时',
-    6: '卯时',
-    7: '辰时',
-    8: '辰时',
-    9: '巳时',
-    10: '巳时',
-    11: '午时',
-    12: '午时',
-    13: '未时',
-    14: '未时',
-    15: '申时',
-    16: '申时',
-    17: '酉时',
-    18: '酉时',
-    19: '戌时',
-    20: '戌时',
-    21: '亥时',
-    22: '亥时',
-  };
-  return hourMap[hour] || '';
-};
-
-function calculateFourPillars(dateTime: string | Date): FourPillars {
-  const date = new Date(dateTime);
-  const lunar = Lunar.fromDate(date);
-
-  const year = lunar.getYearInGanZhi();
-  const month = lunar.getMonthInGanZhi();
-  const day = lunar.getDayInGanZhi();
-  const hour = lunar.getTimeInGanZhi();
-
-  return {
-    year,
-    month,
-    day,
-    hour,
-  };
-}
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -80,6 +32,7 @@ export default function Home() {
     day: '',
     hour: '',
   });
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
@@ -115,8 +68,7 @@ export default function Home() {
           gender,
           birthplace,
           date: format(selectedDate, 'yyyy-MM-dd HH:mm'),
-          lunarDate,
-          chineseHour: getChineseHour(selectedDate),
+          selectedTypes,
         }),
       });
 
@@ -174,6 +126,19 @@ export default function Home() {
     if (!navigator.clipboard) return;
     navigator.clipboard.writeText(value).then(() => {
       alert('复制成功');
+    });
+  };
+
+  const handleSelectType = (type: string) => {
+    if (!selectedTypes.includes(type) && selectedTypes.length >= 4) {
+      alert('探寻天机，点到为止。过多追问，恐失其真意。');
+      return;
+    }
+    setSelectedTypes((prev) => {
+      if (prev?.includes(type)) {
+        return prev.filter((x) => x !== type);
+      }
+      return [...prev, type];
     });
   };
 
@@ -468,17 +433,62 @@ export default function Home() {
                 </div>
               </div>
             )}
-            <div className='flex'>
-              <Tabs>
-                <TabList>
-                  {tabTypes.map((x) => (
-                    <Tab>{x}</Tab>
+            <div>
+              <label className='block text-sm font-medium text-gray-300 mt-4'>
+                解读内容（默认根据年龄）
+              </label>
+              <div className='glass-card p-2 mt-4'>
+                <div>
+                  {selectedTypes.map((x, index) => (
+                    <button
+                      onClick={() => {
+                        handleSelectType(x);
+                      }}
+                      className='glass-button-outline p-2 m-2'
+                      key={'btn-' + index}
+                    >
+                      {x} <span className='text-lg font-extrabold'>×</span>
+                    </button>
                   ))}
-                </TabList>
-                {types.map((x) => (
-                  <TabPanel>{x.map((y) => y)}</TabPanel>
-                ))}
-              </Tabs>
+                </div>
+                <Tabs className='flex gap-4'>
+                  <TabList className='flex flex-col space-y-2 min-w-[120px]'>
+                    {tabTypes.map((type) => (
+                      <Tab
+                        key={type}
+                        className='cursor-pointer px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-700/50 transition-colors duration-200 outline-none'
+                        selectedClassName='bg-[#6366f14d] !text-white'
+                      >
+                        {type}
+                      </Tab>
+                    ))}
+                  </TabList>
+                  <div className='flex-1'>
+                    {interpretationTypes.map((type, index) => (
+                      <TabPanel
+                        key={'tab-panel-' + index}
+                        className='prose prose-invert max-w-none break-words whitespace-pre-wrap'
+                      >
+                        {type.map((x, index) => (
+                          <button
+                            onClick={() => {
+                              handleSelectType(x);
+                            }}
+                            key={'type-' + index}
+                            className={`glass-button-outline p-2 m-2 ${
+                              selectedTypes.includes(x)
+                                ? 'glass-button-active'
+                                : ''
+                            }`}
+                          >
+                            {x}
+                          </button>
+                        ))}
+                      </TabPanel>
+                    ))}
+                  </div>
+                </Tabs>
+              </div>
             </div>
           </motion.div>
 

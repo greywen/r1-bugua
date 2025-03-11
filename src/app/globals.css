@@ -59,6 +59,18 @@
     backdrop-filter: blur(10px);
     border-bottom  : 1px solid rgba(255, 255, 255, 0.1);
   }
+
+  .glass-button-outline {
+    background   : none;
+    border       : 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-button-active {
+    @apply transform scale-105;
+    background: linear-gradient(135deg, #6366f14d, rgba(99, 102, 241, 0.2));
+  }
 }
 
 /* 自定义滚动条样式 */
