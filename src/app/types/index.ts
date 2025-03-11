@@ -57,6 +57,7 @@ export const interpretationTypes = [
     '财富传承',
   ],
   [
+    '婚姻家庭',
     '感情发展',
     '感情初体验',
     '伴侣特质',

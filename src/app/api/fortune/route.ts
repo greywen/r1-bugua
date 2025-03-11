@@ -1,5 +1,10 @@
 import { interpretationTypes } from '@/app/types';
-import { calculateAge, calculateFourPillars, getChineseHour } from '@/utils';
+import {
+  calculateAge,
+  calculateFourPillars,
+  getChineseHour,
+  getDefaultTypes,
+} from '@/utils';
 import { Lunar } from 'lunar-typescript';
 import { NextResponse } from 'next/server';
 
@@ -7,6 +12,10 @@ export async function POST(request: Request) {
   try {
     const { name, gender, birthplace, date, selectedTypes } =
       await request.json();
+    let types = selectedTypes || [];
+    const newDate = new Date(date);
+    const age = calculateAge(new Date(newDate)).years;
+    const lunar = Lunar.fromDate(newDate);
 
     if (name.length > 4) {
       throw new Error('Name is to long');
@@ -28,9 +37,9 @@ export async function POST(request: Request) {
       throw new Error('Type is error');
     }
 
-    const newDate = new Date(date);
-    const age = calculateAge(new Date(newDate)).years;
-    const lunar = Lunar.fromDate(newDate);
+    if (selectedTypes.length === 0) {
+      types = getDefaultTypes(age);
+    }
 
     const pillars = calculateFourPillars(newDate);
 
@@ -54,15 +63,7 @@ ${pillars?.hour ? `时柱：${pillars.hour}` : ''}
 
 【分析范围】
 请根据求测者年龄阶段重点分析：
-${
-  selectedTypes?.length > 0
-    ? selectedTypes.join('、')
-    : `${age < 18 ? '- 学业发展、天赋潜能、健康成长、亲子关系' : ''}
-    ${age >= 18 && age < 30 ? '- 事业起步、学业深造、感情发展、自我定位' : ''}
-    ${age >= 30 && age < 45 ? '- 事业发展、财富积累、婚姻家庭、健康管理' : ''}
-    ${age >= 45 && age < 60 ? '- 事业巅峰、财富规划、家庭和谐、健康养生' : ''}
-    ${age >= 60 ? '- 健康长寿、晚年规划、家庭和睦、心灵修养' : ''}`
-}
+${types.join('、')}
 
 请以通俗易懂的语言进行分析，既要有传统命理的专业性，又要符合现代人的思维方式。
 最后，请给予求测者积极向上、助其趋吉避凶的指导，帮助其了解自身优势与挑战，从而更好地把握人生方向。`;

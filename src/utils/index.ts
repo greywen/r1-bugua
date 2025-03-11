@@ -1,5 +1,5 @@
-import { FourPillars } from "@/app/types";
-import { Lunar } from "lunar-typescript";
+import { FourPillars } from '@/app/types';
+import { Lunar } from 'lunar-typescript';
 
 export function calculateAge(birthdayString: string | Date): {
   years: number;
@@ -71,4 +71,16 @@ export function calculateFourPillars(dateTime: string | Date): FourPillars {
     day,
     hour,
   };
+}
+
+export function getDefaultTypes(age: number) {
+  if (age < 18) {
+    return ['学业发展', '天赋潜能', '健康成长', '亲子关系'];
+  } else if (age >= 18 && age < 30) {
+    return ['事业起步', '学业深造', '感情发展', '自我定位'];
+  } else if (age >= 30 && age < 45) {
+    return ['事业发展', '财富积累', '婚姻家庭', '健康管理'];
+  } else if (age >= 45 && age < 60) {
+    return ['事业巅峰', '财富规划', '家庭和谐', '健康养生'];
+  } else return ['健康长寿', '晚年规划', '家庭和睦', '心灵修养'];
 }

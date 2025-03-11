@@ -11,7 +11,12 @@ import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
 import { FourPillars, tabTypes, interpretationTypes } from './types';
 import Markdown from 'react-markdown';
-import { calculateAge, calculateFourPillars, getChineseHour } from '@/utils';
+import {
+  calculateAge,
+  calculateFourPillars,
+  getChineseHour,
+  getDefaultTypes,
+} from '@/utils';
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 registerLocale('zh-CN', zhCN);
 
@@ -37,6 +42,10 @@ export default function Home() {
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
     const { years, months } = calculateAge(date);
+    console.log(selectedDate);
+    if (!selectedDate) {
+      setSelectedTypes(getDefaultTypes(years));
+    }
     setSelectedDate(date);
     setPillar(calculateFourPillars(date));
     setAge(`${years}岁${months}个月`);
