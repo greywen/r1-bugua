@@ -1,4 +1,7 @@
-export function calculateAge(birthdayString: string | Date): string {
+export function calculateAge(birthdayString: string | Date): {
+  years: number,
+  months: number
+} {
   const birthday = new Date(birthdayString);
   const today = new Date();
 
@@ -13,5 +16,8 @@ export function calculateAge(birthdayString: string | Date): string {
     months--;
   }
 
-  return `${years}岁${months}个月`;
+  return {
+    years,
+    months
+  };
 }

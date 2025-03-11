@@ -82,9 +82,10 @@ export default function Home() {
 
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
+    const { years, months } = calculateAge(date)
     setSelectedDate(date);
     setPillar(calculateFourPillars(date));
-    setAge(calculateAge(date));
+    setAge(`${years}岁${months}个月`);
     const lunar = Lunar.fromDate(date!);
     setLunarDate(
       `${lunar.getYearInChinese()}年 ${lunar.getMonthInChinese()}月 ${lunar.getDayInChinese()}`
@@ -112,7 +113,7 @@ export default function Home() {
           name,
           gender,
           birthplace,
-          date: format(selectedDate, 'yyyy-MM-dd HH'),
+          date: format(selectedDate, 'yyyy-MM-dd HH:mm'),
           lunarDate,
           chineseHour: getChineseHour(selectedDate),
         }),
