@@ -9,9 +9,10 @@ import { motion } from 'framer-motion';
 import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from 'react-datepicker';
 import zhCN from 'date-fns/locale/zh-CN';
-import { FourPillars } from './types';
+import { FourPillars, tabTypes, types } from './types';
 import Markdown from 'react-markdown';
 import { calculateAge } from '@/utils';
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 registerLocale('zh-CN', zhCN);
 
 const getChineseHour = (date: Date): string => {
@@ -82,7 +83,7 @@ export default function Home() {
 
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
-    const { years, months } = calculateAge(date)
+    const { years, months } = calculateAge(date);
     setSelectedDate(date);
     setPillar(calculateFourPillars(date));
     setAge(`${years}岁${months}个月`);
@@ -467,6 +468,18 @@ export default function Home() {
                 </div>
               </div>
             )}
+            <div className='flex'>
+              <Tabs>
+                <TabList>
+                  {tabTypes.map((x) => (
+                    <Tab>{x}</Tab>
+                  ))}
+                </TabList>
+                {types.map((x) => (
+                  <TabPanel>{x.map((y) => y)}</TabPanel>
+                ))}
+              </Tabs>
+            </div>
           </motion.div>
 
           <motion.div
