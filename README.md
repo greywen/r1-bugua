@@ -1,5 +1,7 @@
 # R1 卜卦
 
+TypeScript + Deepseek 打造卜卦网站：技术与玄学的结合
+
 ## 本地运行
 
 1. 安装依赖
@@ -37,7 +39,7 @@ docker run --restart unless-stopped --name r1-bugua -p 3000:3000 -e DEEPSEEK_API
 其他 DeepSeek 提供商可传入环境变量：
 
 ```bash
-docker run -e DEEPSEEK_BASE_URL=Your URL DEEPSEEK_API_KEY=Your Key DEEPSEEK_MODEL=Your model name --name r1-bugua -p 3000:3000 greywen/bugua
+docker run -e DEEPSEEK_BASE_URL=Your URL -e DEEPSEEK_API_KEY=Your Key -e DEEPSEEK_MODEL=Your model name --name r1-bugua -p 3000:3000 greywen/bugua
 ```
 
 ## 免责声明
